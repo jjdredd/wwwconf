@@ -383,6 +383,21 @@ int DB_Base::printhtmlbuffer(SMessage *buf, DWORD size, int p/*direction*/, int 
         return 1;
 }
 
+int DB_Base::printhtmlbuffer(ThreadAcc &TAcc, int p, int *ll, int *pr,
+			     DWORD mode, DWORD &shouldprint, DWORD &skipped){
+
+	int status = 0;
+	for(unsigned i = 0; i < TAcc.T.size(); i++){
+		if(!(status = printhtmlbuffer(&TAcc.T[i].M[0],
+					      TAcc.T[i].M.size(),
+					      p, ll, pr, mode, shouldprint,
+					      skipped)))
+			break;
+	}
+	return status;		// in case return values if printhtmlbuffer
+				// become more diverse
+}
+
 void DB_Base::DB_PrintHtmlIndex(DWORD mtc)
 {
 #if TOPICS_SYSTEM_SUPPORT
@@ -812,6 +827,8 @@ void DB_Base::printhtmlindexhron_bythreads(DWORD mode)
         size_t lefttoread;
         int LastLevel = 0;
         int firprn = 1;
+	ThreadAcc ta;
+	bool sort = true;	// change to a config var here when it appears
         
         // initializing
         alrprn = 0;
@@ -881,8 +898,27 @@ void DB_Base::printhtmlindexhron_bythreads(DWORD mode)
                                 if (!fCheckedRead(msgs, toread, fm))
                                         printhtmlerror();
 
-                                if (printhtmlbuffer(msgs, toread, dir, &LastLevel, &firprn, mode, shouldprint, skipped) == 0)
-                                        goto end;
+				if(sort){
+					sort = ta.consume(msgs, toread);
+					if(!sort){
+						ta.sort();
+						if(!printhtmlbuffer(ta,
+								    dir,
+								    &LastLevel,
+								    &firprn,
+								    mode,
+								    shouldprint,
+								    skipped))
+							goto end;
+					}
+				} else {
+					if (printhtmlbuffer(msgs, toread,
+							    dir, &LastLevel,
+							    &firprn, mode,
+							    shouldprint,
+							    skipped) == 0)
+						goto end;
+				}
                         }
                 }
         }

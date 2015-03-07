@@ -9,6 +9,7 @@
 #ifndef DBASE_H_INCLUDED
 #define DBASE_H_INCLUDED
 
+#include "PrimThread.hpp"
 #include "basetypes.h"
 #include "speller.h"
 #include "logins.h"
@@ -81,6 +82,7 @@ int IP2HostName(DWORD IP, char *hostname, int maxlen);
 
 class DB_Base
 {
+
 protected:
         WCFILE        *fi,        // random access index file
                         *fm,        // message headers
@@ -100,9 +102,14 @@ protected:
         SMessage pmes;        // for message preprinting
         SMessage lastmes;        // for last posted message in collapsed thread
 
-        int SelectMessageThreadtoBuf(DWORD root, DWORD **msgsel, DWORD *msgcnt);
-        
-        int printhtmlbuffer(SMessage *buf, DWORD size, int p, int *ll, int *pr, DWORD mode, DWORD &shouldprint, DWORD &skipped);
+	int SelectMessageThreadtoBuf(DWORD root, DWORD **msgsel, DWORD *msgcnt);
+
+	/* print accumulated threads */
+        int printhtmlbuffer(class ThreadAcc &T, int p, int *ll, int *pr,
+			    DWORD mode, DWORD &shouldprint, DWORD &skipped);
+	/* 80 columns ffs! */
+
+	int printhtmlbuffer(SMessage *buf, DWORD size, int p, int *ll, int *pr, DWORD mode, DWORD &shouldprint, DWORD &skipped);
         int printThreadbuffer(SMessage *buf, DWORD size, int p, DWORD fmpos, int ll, int *czero, DWORD selected, DWORD root, int *bp);
         void printhtmlindexhron_bythreads(DWORD mode);
         int printhtmlindexhron_wothreads();

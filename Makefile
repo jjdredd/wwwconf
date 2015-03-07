@@ -14,7 +14,7 @@ else
 CFLAGS=-m32 -O2 -fomit-frame-pointer -fno-exceptions -Wall -Wextra -Werror -Wfatal-errors -pedantic
 endif
 
-INDEX_SRCS=statfs.cpp dbaseutils.cpp dbase.cpp main.cpp announces.cpp boardtags.cpp speller.cpp security.cpp freedb.cpp profiles.cpp logins.cpp hashindex.cpp error.cpp sendmail.cpp colornick.cpp activitylog.cpp
+INDEX_SRCS=statfs.cpp dbaseutils.cpp dbase.cpp main.cpp announces.cpp boardtags.cpp speller.cpp security.cpp freedb.cpp profiles.cpp logins.cpp hashindex.cpp error.cpp sendmail.cpp colornick.cpp activitylog.cpp PrimThread.cpp
 DBTOOL_SRCS=error.cpp dbaseutils.cpp freedb.cpp profiles.cpp hashindex.cpp profman.cpp
 SRCS=$(INDEX_SRCS) $(DBTOOL_SRCS)
 
@@ -41,6 +41,11 @@ index.cgi: $(INDEX_OBJS) .depend
 
 dbtool: $(DBTOOL_OBJS) .depend
 	$(CC) $(CFLAGS) -o dbtool -Wl,-\( $(DBTOOL_OBJS) -Wl,-\)
+
+install: index.cgi
+	rm /var/www/localhost/cgi-bin/index.cgi
+	cp index.cgi /var/www/localhost/cgi-bin/
+	chmod 777 /var/www/localhost/cgi-bin/index.cgi
 
 clean:
 	@rm -f *.o .depend
