@@ -898,25 +898,25 @@ void DB_Base::printhtmlindexhron_bythreads(DWORD mode)
                                 if (!fCheckedRead(msgs, toread, fm))
                                         printhtmlerror();
 
-				if(sort){
-					sort = ta.consume(msgs, toread);
-					if(!sort){
-						ta.sort();
-						if(!printhtmlbuffer(ta,
-								    dir,
-								    &LastLevel,
-								    &firprn,
-								    mode,
-								    shouldprint,
-								    skipped))
-							goto end;
-					}
-				} else {
-					if (printhtmlbuffer(msgs, toread,
+				if(!sort){
+					if(!printhtmlbuffer(msgs, toread,
 							    dir, &LastLevel,
 							    &firprn, mode,
 							    shouldprint,
-							    skipped) == 0)
+							    skipped))
+						goto end;
+					continue;
+				}
+
+				if(!(sort = ta.consume(msgs, toread))
+				   || (lefttoread <= READ_MESSAGE_HEADER
+				       * sizeof(SMessage))){
+					ta.sort();
+					if(!printhtmlbuffer(ta, 1,
+							    &LastLevel,
+							    &firprn, mode,
+							    shouldprint,
+							    skipped))
 						goto end;
 				}
                         }

@@ -33,6 +33,7 @@ public:
 	void sort();
 
 private:
+	unsigned consumed;
 	std::vector<PrimThread> T;
 };
 

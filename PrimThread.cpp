@@ -14,7 +14,7 @@ void PrimThread::append_msg(struct SMessage *m){
 }
 
 // ThreadAcc
-ThreadAcc::ThreadAcc(){}
+ThreadAcc::ThreadAcc() : consumed(0) {}
 ThreadAcc::~ThreadAcc(){}
 
 // TODO optimize for topics
@@ -22,11 +22,21 @@ bool ThreadAcc::consume(SMessage *messages, int size){
 
 	PrimThread pt;
 	for(int i = 0; i < size; i++){
+
 		// return false if there's no need to print at all
-		if (messages[i].Date < current_minprntime && currentlsel == 1)
+		// need to check here because print won't be able
+		// to check for us anymore (not called until
+		// everythin' is sorted) (cope-paste from dbase.cpp)
+		if((messages[i].Date < current_minprntime && currentlsel == 1)
+		   || (currentlsel == 2 && this->consumed == currenttc))
 			return false;
-		if(!messages[i].Level) T.push_back(pt);
-		T.end()->append_msg(&messages[i]);
+
+		if(!messages[i].Level){
+			T.push_back(pt);
+			++this->consumed;
+		}
+
+		T.rbegin()->append_msg(&messages[i]);
 	}
 	return true;
 }
