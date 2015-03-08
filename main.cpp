@@ -462,7 +462,7 @@ static void PrintLostPasswordForm()
 static void PrintConfig()        
 {
         char str1[20], str2[20], str3[20], str4[20], str5[20],
-		str6[20], str7[20], str8[20], str9[20], strbmp[20];
+		str6[20], str7[20], str8[20], str9[20];
         int i;
 
         printf("<TABLE align=center width=\"100%%\"><tr><td><FORM METHOD=POST ACTION=\"%s?configure=action\" name=\"configure\">",
@@ -565,8 +565,6 @@ static void PrintConfig()
         else str4[0] = 0;
         if((currentdsm & CONFIGURE_bot) != 0) strcpy(str5, RADIO_CHECKED);
         else str5[0] = 0;
-	if(cookie_bump) strcpy(strbmp, RADIO_CHECKED);
-	else strbmp[0] = 0;
 
         printf("<TABLE><TR><TD ALIGN=RIGHT>%s<INPUT TYPE=CHECKBOX NAME=\"dsm\" VALUE=1 %s>",
                 MESSAGEHEAD_configure_disablesmiles, str3);
@@ -589,7 +587,7 @@ static void PrintConfig()
         printf("<BR>%s<INPUT TYPE=CHECKBOX NAME=\"bot\" VALUE=1 %s>",
                 MESSAGEHEAD_configure_disablebot, str5);
 	printf("<BR>%s<INPUT TYPE=CHECKBOX NAME=\"bump\" VALUE=1 %s>",
-	       MESSAGEHEAD_CONFIG_BUMP, strbmp);
+	       MESSAGEHEAD_CONFIG_BUMP, cookie_bump ? RADIO_CHECKED : "");
 
         printf("</TD></TR></TABLE>");
 
