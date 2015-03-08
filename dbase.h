@@ -108,7 +108,7 @@ protected:
 	int SelectMessageThreadtoBuf(DWORD root, DWORD **msgsel, DWORD *msgcnt);
 
 	/* print accumulated threads */
-        int printhtmlbuffer(class ThreadAcc &T, int p, int *ll, int *pr,
+        int printhtmlbuffer(class ThreadAcc &T, int *ll, int *pr,
 			    DWORD mode, DWORD &shouldprint, DWORD &skipped);
 	/* 80 columns ffs! */
 

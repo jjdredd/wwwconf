@@ -1,3 +1,7 @@
+// BUMP, requested by Demon:
+// http://zlo.rt.mipt.ru/?read=8823385
+// implemented by Judge_Dredd, config option proposed by Selenka
+
 #include "PrimThread.hpp"
 
 // PrimThread
@@ -18,10 +22,12 @@ ThreadAcc::ThreadAcc() : consumed(0) {}
 ThreadAcc::~ThreadAcc(){}
 
 // TODO optimize for topics
-bool ThreadAcc::consume(SMessage *messages, int size){
+bool ThreadAcc::consume(SMessage *messages, int size, bool d){
 
 	PrimThread pt;
-	for(unsigned i = 0; i < size/sizeof(SMessage); i++){
+	for(int i = d ? 0 : size/sizeof(SMessage) - 1;
+	    d ? (unsigned) i < size/sizeof(SMessage) : i >= 0;
+	    d ? i++ : i--){
 		// return false if there's no need to print at all
 		// need to check here because print won't be able
 		// to check for us anymore (not called until

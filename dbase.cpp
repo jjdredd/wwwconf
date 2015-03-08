@@ -49,6 +49,7 @@ DWORD cookie_ss;
 DWORD cookie_dsm;
 DWORD cookie_topics;
 long cookie_tz;
+// bump config (thanks, Selenka, for the idea)
 unsigned cookie_bump;
 
 char *cookie_seq;
@@ -384,7 +385,7 @@ int DB_Base::printhtmlbuffer(SMessage *buf, DWORD size, int p/*direction*/, int 
         return 1;
 }
 
-int DB_Base::printhtmlbuffer(ThreadAcc &TAcc, int p, int *ll, int *pr,
+int DB_Base::printhtmlbuffer(ThreadAcc &TAcc, int *ll, int *pr,
 			     DWORD mode, DWORD &shouldprint, DWORD &skipped){
 
 	int status = 0;
@@ -392,7 +393,11 @@ int DB_Base::printhtmlbuffer(ThreadAcc &TAcc, int p, int *ll, int *pr,
 		if(!(status = printhtmlbuffer(&TAcc.T[i].M[0],
 					      TAcc.T[i].M.size()
 					      * sizeof(SMessage),
-					      p, ll, pr, mode, shouldprint,
+					      // always forward direction
+					      // we should have taken care
+					      // this in 'ThreadAcc::consume()
+					      1,
+					      ll, pr, mode, shouldprint,
 					      skipped)))
 			break;
 	}
@@ -911,12 +916,11 @@ void DB_Base::printhtmlindexhron_bythreads(DWORD mode)
 				}
 
 				if(// no more sorting required
-				   !(sort = ta.consume(msgs, toread))
+				   !(sort = ta.consume(msgs, toread, dir != 0))
 				   // or last payload left
 				   || (!lefttoread && !i)){
 					ta.sort();
-					if(!printhtmlbuffer(ta, dir,
-							    &LastLevel,
+					if(!printhtmlbuffer(ta, &LastLevel,
 							    &firprn, mode,
 							    shouldprint,
 							    skipped))

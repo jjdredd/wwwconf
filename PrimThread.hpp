@@ -1,3 +1,7 @@
+// BUMP, requested by Demon:
+// http://zlo.rt.mipt.ru/?read=8823385
+// implemented by Judge_Dredd, config option proposed by Selenka
+
 #ifndef PRIM_THREAD
 #define PRIM_THREAD
 
@@ -29,7 +33,7 @@ class ThreadAcc {
 public:
 	ThreadAcc();
 	~ThreadAcc();
-	bool consume(struct SMessage *messages, int size);
+	bool consume(struct SMessage *messages, int size, bool d);
 	void sort();
 
 private:
