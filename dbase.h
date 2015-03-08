@@ -58,6 +58,9 @@ extern DWORD cookie_dsm;
 extern DWORD cookie_topics;
 extern long cookie_tz;
 
+/* bump config */
+extern unsigned cookie_bump;
+
 extern char *cookie_seq;
 extern char *cookie_name;
 

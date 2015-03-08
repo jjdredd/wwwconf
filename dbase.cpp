@@ -49,6 +49,7 @@ DWORD cookie_ss;
 DWORD cookie_dsm;
 DWORD cookie_topics;
 long cookie_tz;
+unsigned cookie_bump;
 
 char *cookie_seq;
 char *cookie_name;
@@ -829,7 +830,7 @@ void DB_Base::printhtmlindexhron_bythreads(DWORD mode)
         int LastLevel = 0;
         int firprn = 1;
 	ThreadAcc ta;
-	bool sort = true;	// change to a config var here when it appears
+	bool sort = (cookie_bump != 0);
         
         // initializing
         alrprn = 0;

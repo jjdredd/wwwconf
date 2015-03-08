@@ -474,6 +474,7 @@ extern const char *UserRight_List[USERRIGHT_COUNT];
 #define MESSAGEHEAD_configure_disablebot  "Отключить защиту против ботов"
 #define MESSAGEHEAD_configure_showreplyform        "Не отображать форму ответа"
 #define MESSAGEHEAD_configure_applysettings        "Сохранить настройки"
+#define MESSAGEHEAD_CONFIG_BUMP                    "BUMP (cookies only)"
 
 
 #define MESSAGEHEAD_configure_saving_to_profile "Настройки сохраняются в профайле и будут доступны с любого браузера"

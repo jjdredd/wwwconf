@@ -461,7 +461,8 @@ static void PrintLostPasswordForm()
 /* print configuration form */
 static void PrintConfig()        
 {
-        char str1[20], str2[20], str3[20], str4[20], str5[20], str6[20], str7[20], str8[20], str9[20];
+        char str1[20], str2[20], str3[20], str4[20], str5[20],
+		str6[20], str7[20], str8[20], str9[20], strbmp[20];
         int i;
 
         printf("<TABLE align=center width=\"100%%\"><tr><td><FORM METHOD=POST ACTION=\"%s?configure=action\" name=\"configure\">",
@@ -564,6 +565,8 @@ static void PrintConfig()
         else str4[0] = 0;
         if((currentdsm & CONFIGURE_bot) != 0) strcpy(str5, RADIO_CHECKED);
         else str5[0] = 0;
+	if(cookie_bump) strcpy(strbmp, RADIO_CHECKED);
+	else strbmp[0] = 0;
 
         printf("<TABLE><TR><TD ALIGN=RIGHT>%s<INPUT TYPE=CHECKBOX NAME=\"dsm\" VALUE=1 %s>",
                 MESSAGEHEAD_configure_disablesmiles, str3);
@@ -585,6 +588,9 @@ static void PrintConfig()
                 MESSAGEHEAD_configure_disablecolor, str4);
         printf("<BR>%s<INPUT TYPE=CHECKBOX NAME=\"bot\" VALUE=1 %s>",
                 MESSAGEHEAD_configure_disablebot, str5);
+	printf("<BR>%s<INPUT TYPE=CHECKBOX NAME=\"bump\" VALUE=1 %s>",
+	       MESSAGEHEAD_CONFIG_BUMP, strbmp);
+
         printf("</TD></TR></TABLE>");
 
         if(ULogin.LU.ID[0] && (ULogin.pui->Flags & PROFILES_FLAG_VIEW_SETTINGS) )
@@ -692,13 +698,18 @@ void PrintHTMLHeader(DWORD code, DWORD curind, DWORD retind = 0)
 
         if((code & HEADERSTRING_NO_CACHE_THIS) != 0) printf("Cache-Control: no-cache\nPragma: no-cache\n");
 
-        printf("Set-Cookie: " COOKIE_NAME_STRING "name=%s|lsel=%lu|tc=%lu|tt=%lu|tv=%lu|ss=%lu|" \
-                "lm=%ld|fm=%ld|lt=%ld|ft=%ld|dsm=%lu|seq=%08lx%08lx|topics=%lu|lann=%lu|tovr=%lu|tz=%ld&;" \
-                " expires=" COOKIE_EXPIRATION_DATE "path=" COOKIE_SERVER_PATH
-                "\nSet-Cookie: " COOKIE_SESSION_NAME "on&; path=" COOKIE_SERVER_PATH "\n\n", 
-                CodeHttpString(cookie_name, 0), cookie_lsel, cookie_tc, cookie_tt, cookie_tv,
-                cookie_ss, currentlm, currentfm, currentlt, currentft, cookie_dsm, ULogin.LU.ID[0], ULogin.LU.ID[1],
-                cookie_topics, currentlann, topicsoverride,cookie_tz);
+        printf("Set-Cookie: " COOKIE_NAME_STRING
+	       "name=%s|lsel=%lu|tc=%lu|tt=%lu|tv=%lu|ss=%lu|"
+	       "lm=%ld|fm=%ld|lt=%ld|ft=%ld|dsm=%lu|seq=%08lx%08lx|"
+	       "topics=%lu|lann=%lu|tovr=%lu|tz=%ld|bump=%u&;"
+	       " expires=" COOKIE_EXPIRATION_DATE "path=" COOKIE_SERVER_PATH
+	       "\nSet-Cookie: " COOKIE_SESSION_NAME "on&; path="
+	       COOKIE_SERVER_PATH "\n\n",
+	       CodeHttpString(cookie_name, 0), cookie_lsel, cookie_tc,
+	       cookie_tt, cookie_tv, cookie_ss, currentlm, currentfm,
+	       currentlt, currentft, cookie_dsm, ULogin.LU.ID[0],
+	       ULogin.LU.ID[1], cookie_topics, currentlann, topicsoverride,
+	       cookie_tz, cookie_bump);
 
         printf(HTML_START);
 
@@ -1920,6 +1931,7 @@ void ParseCookie()
         cookie_lsel = CONFIGURE_SETTING_DEFAULT_lsel;
         cookie_dsm = CONFIGURE_SETTING_DEFAULT_dsm;
         cookie_tz = DATETIME_DEFAULT_TIMEZONE;
+	cookie_bump = CONFIGURE_SETTING_DEFAULT_BUMP;
         
 #if        TOPICS_SYSTEM_SUPPORT
         cookie_topics = CONFIGURE_SETTING_DEFAULT_topics;
@@ -2096,6 +2108,16 @@ void ParseCookie()
                                 if(((*t) != '\0' && *st == '\0') && errno != ERANGE && tmp_signed >= -12 && tmp_signed <= 12)
                                 {
                                         cookie_tz = tmp_signed;
+                                }
+                                free(t);
+                        }
+
+			// read bump configuration
+			if((t = strget(ss, "bump=", 12, '|', 0))) {
+                                tmp = strtoul(t, &st, 10);
+                                if(((*t) != '\0' && *st == '\0')
+				   && errno != ERANGE){
+					cookie_bump = tmp;
                                 }
                                 free(t);
                         }
@@ -3390,6 +3412,7 @@ int main()
                                 currentlsel = CONFIGURE_SETTING_DEFAULT_lsel;
                                 currentdsm = CONFIGURE_SETTING_DEFAULT_dsm;
                                 currenttz = DATETIME_DEFAULT_TIMEZONE;
+				cookie_bump = CONFIGURE_SETTING_DEFAULT_BUMP;
                                 
                                 if(par != NULL) {
 
@@ -3464,6 +3487,11 @@ int main()
                                         READ_PARAM_NUM("tz=", currenttz, DATETIME_DEFAULT_TIMEZONE);
                                         if(currenttz < -12 || currenttz > 12)
                                                 currenttz = DATETIME_DEFAULT_TIMEZONE;
+
+					// read bump settings
+					READ_PARAM_NUM("bump=", cookie_bump,
+						       CONFIGURE_SETTING_DEFAULT_BUMP);
+
 
 #if        TOPICS_SYSTEM_SUPPORT
                                         // read topics that should be displayed

@@ -150,6 +150,7 @@ const char *GetBoardUrl();
 #define CONFIGURE_SETTING_DEFAULT_dsm        CONFIGURE_plu | CONFIGURE_clr
 #define CONFIGURE_SETTING_DEFAULT_topics     0x7FFFF
 #define CONFIGURE_SETTING_DEFAULT_toverride  0  // own settings
+#define CONFIGURE_SETTING_DEFAULT_BUMP       0	/* no bump by default */
 
 #define CONFIGURE_SETTING_MAX_tc     10000
 #define CONFIGURE_SETTING_MAX_hours  1440u
