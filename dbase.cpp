@@ -387,9 +387,10 @@ int DB_Base::printhtmlbuffer(ThreadAcc &TAcc, int p, int *ll, int *pr,
 			     DWORD mode, DWORD &shouldprint, DWORD &skipped){
 
 	int status = 0;
-	for(unsigned i = 0; i < TAcc.T.size(); i++){
+	for(int i = TAcc.T.size() - 1; i >= 0; i--){
 		if(!(status = printhtmlbuffer(&TAcc.T[i].M[0],
-					      TAcc.T[i].M.size(),
+					      TAcc.T[i].M.size()
+					      * sizeof(SMessage),
 					      p, ll, pr, mode, shouldprint,
 					      skipped)))
 			break;
@@ -908,11 +909,12 @@ void DB_Base::printhtmlindexhron_bythreads(DWORD mode)
 					continue;
 				}
 
-				if(!(sort = ta.consume(msgs, toread))
-				   || (lefttoread <= READ_MESSAGE_HEADER
-				       * sizeof(SMessage))){
+				if(// no more sorting required
+				   !(sort = ta.consume(msgs, toread))
+				   // or last payload left
+				   || (!lefttoread && !i)){
 					ta.sort();
-					if(!printhtmlbuffer(ta, 1,
+					if(!printhtmlbuffer(ta, dir,
 							    &LastLevel,
 							    &firprn, mode,
 							    shouldprint,

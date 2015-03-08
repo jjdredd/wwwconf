@@ -21,8 +21,7 @@ ThreadAcc::~ThreadAcc(){}
 bool ThreadAcc::consume(SMessage *messages, int size){
 
 	PrimThread pt;
-	for(int i = 0; i < size; i++){
-
+	for(unsigned i = 0; i < size/sizeof(SMessage); i++){
 		// return false if there's no need to print at all
 		// need to check here because print won't be able
 		// to check for us anymore (not called until
